@@ -18,6 +18,8 @@
 #include <fcntl.h>
 #include "Vector.h"
 
+
+
 //todo: dont use using namespace
 using namespace std;
 bool loadOBJ(const char* path,
@@ -132,16 +134,83 @@ bool loadOBJ(const char* path,
 	return true;
 }
 
+bool loadMtl(const char* path,
+		string& newmtl,
+		Vector3d& Ka,
+		Vector3d& Kd,
+		Vector3d& Ks,
+		double& Ns,
+		string& map_kd,
+		string& map_normal
+		){
+
+	fstream fs;
+	fs.open(path, fstream::in);
+
+	double x, y,z;
+	string buffer;
+	string comment;
+	while(!fs.eof()){
+		//skip comments.
+		if((int)'#' == fs.peek()){
+			getline(fs, comment);
+			cout<< comment<< endl;
+			continue;
+		}
+
+//		cout << "reach here" << endl<< endl;
+		fs>> buffer;
+//		cout << buffer<< endl;
+		if(buffer == "newmtl"){
+			fs>> newmtl;
+		}else		
+		if(buffer== "Ka"){
+			fs>> x>>y>> z;
+			Ka = Vector3d(x,y,z);
+		}else
+		if(buffer== "Kd"){
+			fs>> x>>y>> z;
+			Kd = Vector3d(x,y,z);
+		}else
+		if(buffer== "Ks"){
+			fs>> x>>y>> z;
+			Ks = Vector3d(x,y,z);
+		}else
+		if(buffer=="Ns"){
+			fs >> Ns;
+		}else
+		if(buffer == "map_kd"){
+			fs>> map_kd;
+		}else
+		if(buffer =="map_normal" ){
+			fs >> map_normal;
+		}else{
+			continue;
+		}
+	}	
+	fs.close();
+	return true;
+}
+
 
 int main(int argc, char** argv){
-		vector<Vector3d> vertexes;
-		vector<Vector3d> normals;
-		vector<Vector2d> tCoords;
-		vector<Vector3d> tans;
-		vector<Vector3d> biTans;
-		vector<vector<Vector3d> >faces;	
-		string nameOfMtllib;
-		string nameOfMtluse;
+	vector<Vector3d> vertexes;
+	vector<Vector3d> normals;
+	vector<Vector2d> tCoords;
+	vector<Vector3d> tans;
+	vector<Vector3d> biTans;
+	vector<vector<Vector3d> >faces;	
+	string nameOfMtllib;
+	string nameOfMtluse;
+	
+	string newmtl;
+	Vector3d Ka;
+	Vector3d Kd;
+	Vector3d Ks;
+	double Ns;
+	string map_kd;
+	string map_normal;
+
 	loadOBJ(argv[1],
 		vertexes,
 		normals,
@@ -153,15 +222,50 @@ int main(int argc, char** argv){
 		nameOfMtluse
 		);
 
-	cout << vertexes[0];
-	cout << vertexes[13007];
+	loadMtl(nameOfMtllib.c_str(),
+		newmtl,
+		Ka,Kd,Ks,Ns,
+		map_kd, 
+		map_normal
+	);
 
 	
 
-	cout << faces[13007][0];
-	cout << faces[13007][1];
-	cout << faces[13007][2];
-	cout << faces[13007][3];
+	index_tangent= glGetAttribLocation(p , "tangent");
+	index_bitangent =glGetAttribLocation(p ,"bitangent") ;
+
+	glBegin ( GL_QUADS );
+
+	for ( i =0; i < TOTAL_FACE_COUNT ; i ++) {
+		for ( j =0; j <4; j ++) {
+			// the index number
+			vi = face [ i ][ j ][0];
+			ti = face [ i ][ j ][1];
+			ni = face [ i ][ j ][2];
+			/* normal */
+			glNormal3fv ( normal [ ni ]) ;
+			/* texture coordinate */
+			glTexCoord3fv ( tcoord [ ti ]) ;
+			/* pass T and B
+			( value of a generic vertex attribute ) */
+			glVertexAttrib3fv ( index_tangent , tangent [ vi ]) ;
+			glVertexAttrib3fv ( index_bitangent , bitangent [ vi ]) ;
+			/* the vertex
+			--- ‘ glVertex3fv ’ is a
+			shortcut for ‘ glV ertexA ttrib3 fv (0, ..) ’ */
+			glVertex3fv( vertex [ vi ]) ;
+		}
+	}
+	glEnd () ;
+//cout << vertexes[0];
+//cout << vertexes[13007];
+
+	
+
+//	cout << faces[13007][0];
+//	cout << faces[13007][1];
+//	cout << faces[13007][2];
+//	cout << faces[13007][3];
 
 	//read file
 	//read shader and use shader 
