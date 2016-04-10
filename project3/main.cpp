@@ -228,7 +228,7 @@ int main(int argc, char** argv){
 		map_kd, 
 		map_normal
 	);
-
+/*j
 	
 
 	index_tangent= glGetAttribLocation(p , "tangent");
@@ -242,21 +242,23 @@ int main(int argc, char** argv){
 			vi = face [ i ][ j ][0];
 			ti = face [ i ][ j ][1];
 			ni = face [ i ][ j ][2];
-			/* normal */
+		//
 			glNormal3fv ( normal [ ni ]) ;
-			/* texture coordinate */
+			//
 			glTexCoord3fv ( tcoord [ ti ]) ;
-			/* pass T and B
-			( value of a generic vertex attribute ) */
+			// pass T and B
+			( value of a generic vertex attribute ) 
 			glVertexAttrib3fv ( index_tangent , tangent [ vi ]) ;
 			glVertexAttrib3fv ( index_bitangent , bitangent [ vi ]) ;
-			/* the vertex
+			// the vertex
 			--- ‘ glVertex3fv ’ is a
-			shortcut for ‘ glV ertexA ttrib3 fv (0, ..) ’ */
+			shortcut for ‘ glV ertexA ttrib3 fv (0, ..) ’ 
 			glVertex3fv( vertex [ vi ]) ;
 		}
 	}
 	glEnd () ;
+
+	*/
 //cout << vertexes[0];
 //cout << vertexes[13007];
 
